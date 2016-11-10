@@ -7,18 +7,56 @@
 //
 
 #import "MessagesViewController.h"
+#import<Messages/Messages.h>
 
+@interface MessagesViewController ()<MSStickerBrowserViewDataSource>
 
-@interface MessagesViewController ()
-
+@property(nonatomic)NSMutableArray * asrray;
+@property(nonatomic,strong)MSStickerBrowserViewController  * MSVC;
 @end
 
 @implementation MessagesViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _asrray = [[NSMutableArray alloc]initWithCapacity:5];
+    for (int i = 1; i<=2; i++) {
+        NSURL * url  = [[NSBundle mainBundle] URLForResource:[NSString stringWithFormat:@"Sticker %d",i] withExtension: @"png"];
+        if (url) {
+            MSSticker* sticker = [[MSSticker alloc]initWithContentsOfFileURL:url localizedDescription:@"" error:nil];
+            [_asrray addObject:sticker];
+        }
+        
+    }
+    
+    
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    _MSVC = [[MSStickerBrowserViewController alloc]initWithStickerSize:MSStickerSizeLarge];
+    [self addChildViewController:_MSVC];
+    [self.view addSubview:_MSVC.view];
+    _MSVC.stickerBrowserView.backgroundColor = [UIColor orangeColor];
+    _MSVC.stickerBrowserView.dataSource =self;
+     [self.view.topAnchor constraintEqualToAnchor:_MSVC.view.topAnchor].active = YES;
+    [self.view.bottomAnchor constraintEqualToAnchor:_MSVC.view.bottomAnchor].active =YES;
+     [self.view.rightAnchor constraintEqualToAnchor:_MSVC.view.rightAnchor].active =YES;
+     [self.view.leftAnchor constraintEqualToAnchor:_MSVC.view.leftAnchor].active =YES;
+    
+    
     // Do any additional setup after loading the view.
 }
+
+
+-(NSInteger)numberOfStickersInStickerBrowserView:(MSStickerBrowserView *)stickerBrowserView
+{
+    return  _asrray.count;
+}
+
+-(MSSticker *)stickerBrowserView:(MSStickerBrowserView *)stickerBrowserView stickerAtIndex:(NSInteger)index
+{
+    return _asrray[index];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
